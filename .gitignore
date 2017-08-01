@@ -31,3 +31,6 @@ tests/_support/_generated
 /config/db.php
 /web/index.php
 /web/index-test.php
+/yii
+/yii.bat
+/config/params-local.php
