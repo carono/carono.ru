@@ -60,11 +60,9 @@ $this->beginPage();
             <ul class="social list-inline">
                 <li><a href="https://vk.com/carno"><i class="fa fa-vk"></i></a></li>
                 <li><a href="https://github.com/carono"><i class="fa fa-github-alt"></i></a></li>
+                <li><a href="https://t.me/Carno59"><i class="fa fa-paper-plane"></i></a></li>
             </ul>
         </div>
-        <a class="btn btn-cta-primary pull-right" href="mailto:info@carono.ru" target="_blank">
-            <i class="fa fa-paper-plane"></i> Contact Me
-        </a>
     </div>
 </header>
 
