@@ -667,3 +667,11 @@ iframe {
     border: 1px solid;
     padding: 2px;
 }
+
+.footer {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    width: 100%;
+}
