@@ -29,3 +29,5 @@ phpunit.phar
 tests/_output/*
 tests/_support/_generated
 /config/db.php
+/web/index.php
+/web/index-test.php

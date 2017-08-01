@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d0ae91dd49c8a7d0b85d596e662463df",
+    "content-hash": "d818f6eab1f3c9de48c1bc6f328ccfa3",
     "packages": [
         {
             "name": "bower-asset/bootstrap",
@@ -206,6 +206,73 @@
             "license": [
                 "MIT"
             ]
+        },
+        {
+            "name": "carono/yii2-basic-env",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/carono/yii2-basic-env.git",
+                "reference": "64288ad9101bbb8d640bca3b6e7d9c1a4d008200"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/carono/yii2-basic-env/zipball/64288ad9101bbb8d640bca3b6e7d9c1a4d008200",
+                "reference": "64288ad9101bbb8d640bca3b6e7d9c1a4d008200",
+                "shasum": ""
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "bootstrap": "carono\\env\\Bootstrap"
+            },
+            "autoload": {
+                "psr-4": {
+                    "carono\\env\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "carono",
+                    "email": "info@carono.ru"
+                }
+            ],
+            "time": "2017-07-07T21:52:50+00:00"
+        },
+        {
+            "name": "carono/yii2-installer",
+            "version": "0.0.15",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/carono/yii2-installer.git",
+                "reference": "436fd3701b8f83015813a9562f01c38185aeeaf5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/carono/yii2-installer/zipball/436fd3701b8f83015813a9562f01c38185aeeaf5",
+                "reference": "436fd3701b8f83015813a9562f01c38185aeeaf5",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "^2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "carono\\yii2installer\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "carno",
+                    "email": "spamer2000@list.ru"
+                }
+            ],
+            "time": "2017-07-03T19:41:35+00:00"
         },
         {
             "name": "cebe/markdown",
