@@ -1,3 +1,14 @@
+<?php
+
+use yii\helpers\Html;
+
+/**
+ * @var string $content
+ * @var \yii\web\View $this
+ */
+
+$this->beginPage();
+?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -9,21 +20,17 @@
     <title>Сайт в разработке</title>
 
     <!-- Bootstrap -->
-    <link href="assets/css/bootstrap.css" rel="stylesheet">
-    <link href="assets/css/bootstrap-theme.css" rel="stylesheet">
-    <link href="assets/css/font-awesome.css" rel="stylesheet">
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <link href="/css/bootstrap-theme.css" rel="stylesheet">
+    <link href="/css/font-awesome.css" rel="stylesheet">
 
     <!-- siimple style -->
-    <link href="assets/css/style.css" rel="stylesheet">
-
-    <!-- =======================================================
-        Theme Name: WeBuild
-        Theme URL: https://bootstrapmade.com/free-bootstrap-coming-soon-template-countdwon/
-        Author: BootstrapMade
-        Author URL: https://bootstrapmade.com
-    ======================================================= -->
+    <link href="/css/style.css" rel="stylesheet">
+    <?php $this->head() ?>
+    <?= Html::csrfMetaTags() ?>
 </head>
 <body>
+<?php $this->beginBody() ?>
 <div id="wrapper">
     <div class="container">
         <div class="row">
@@ -78,5 +85,7 @@
     <div><img src="https://mc.yandex.ru/watch/45487056" style="position:absolute; left:-9999px;" alt=""/></div>
 </noscript>
 <!-- /Yandex.Metrika counter -->
+<?php $this->endBody() ?>
 </body>
 </html>
+<?php $this->endPage() ?>
