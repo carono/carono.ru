@@ -51,11 +51,11 @@ $this->beginPage();
         </div>
     </header>
 
-    <?= $this->render('dummy') ?>
+    <?php $this->render('dummy') ?>
 
-    <?php $content ?>
+    <?= $content ?>
 
-    <footer class="footer navbar-fixed-bottom">
+    <footer class="footer">
         <div class="container text-center">
             Shared by <i class="fa fa-love"></i><a href="https://bootstrapthemes.co">BootstrapThemes</a>
         </div>
