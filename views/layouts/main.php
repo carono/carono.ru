@@ -43,9 +43,9 @@ $this->beginPage();
                 <h1 class="name">Александр Касьянов</h1>
                 <h2 class="desc">Senior web-developer</h2>
                 <ul class="social list-inline">
-                    <li><a href="https://vk.com/carno"><i class="fa fa-vk"></i></a></li>
-                    <li><a href="https://github.com/carono"><i class="fa fa-github-alt"></i></a></li>
-                    <li><a href="https://t.me/Carno59"><i class="fa fa-paper-plane"></i></a></li>
+                    <li><a href="https://vk.com/carno"><i class="fab fa-vk"></i></a></li>
+                    <li><a href="https://github.com/carono"><i class="fab fa-github"></i></a></li>
+                    <li><a href="https://t.me/Carno59"><i class="fab fa-telegram-plane"></i></a></li>
                 </ul>
             </div>
         </div>
