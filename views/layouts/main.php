@@ -56,9 +56,7 @@ $this->beginPage();
     <?= $content ?>
 
     <footer class="footer">
-        <div class="container text-center">
-            Shared by <i class="fa fa-love"></i><a href="https://bootstrapthemes.co">BootstrapThemes</a>
-        </div>
+        <div class="container text-center"></div>
     </footer>
 
     <?= $this->render('metrika') ?>
