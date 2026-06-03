@@ -52,6 +52,19 @@ class Tag extends ActiveRecord
         ];
     }
 
+    public function fields(): array
+    {
+        return [
+            'id', 'slug', 'title', 'created_at',
+            'url' => fn(self $m) => $m->getUrl(),
+        ];
+    }
+
+    public function extraFields(): array
+    {
+        return ['articles'];
+    }
+
     public function attributeLabels(): array
     {
         return [
@@ -68,9 +81,9 @@ class Tag extends ActiveRecord
             ->viaTable('{{%article_tag}}', ['tag_id' => 'id']);
     }
 
-    public function getUrl(): string
+    public function getUrl(bool $absolute = false): string
     {
-        return Url::to(['blog/tag', 'slug' => $this->slug]);
+        return Url::to(['/blog/tag', 'slug' => $this->slug], $absolute ? true : false);
     }
 
     public static function findOrCreate(string $title): self

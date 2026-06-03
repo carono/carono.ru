@@ -49,6 +49,19 @@ class Category extends ActiveRecord
         ];
     }
 
+    public function fields(): array
+    {
+        return [
+            'id', 'slug', 'title', 'description', 'created_at', 'updated_at',
+            'url' => fn(self $m) => $m->getUrl(),
+        ];
+    }
+
+    public function extraFields(): array
+    {
+        return ['articles'];
+    }
+
     public function attributeLabels(): array
     {
         return [
@@ -67,8 +80,8 @@ class Category extends ActiveRecord
             ->viaTable('{{%article_category}}', ['category_id' => 'id']);
     }
 
-    public function getUrl(): string
+    public function getUrl(bool $absolute = false): string
     {
-        return Url::to(['blog/category', 'slug' => $this->slug]);
+        return Url::to(['/blog/category', 'slug' => $this->slug], $absolute ? true : false);
     }
 }

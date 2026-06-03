@@ -60,12 +60,33 @@ class User extends ActiveRecord implements IdentityInterface
         if (empty($token)) {
             return null;
         }
-        return static::findOne(['access_token' => $token, 'status' => self::STATUS_ACTIVE]);
+        $row = UserToken::findOne(['token' => $token]);
+        if ($row === null || $row->isExpired()) {
+            return null;
+        }
+        $user = static::findOne(['id' => $row->user_id, 'status' => self::STATUS_ACTIVE]);
+        if ($user === null) {
+            return null;
+        }
+        $row->touch();
+        return $user;
     }
 
     public static function findByUsername(string $username): ?self
     {
         return static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
+    }
+
+    public function fields(): array
+    {
+        return [
+            'id',
+            'username',
+            'email',
+            'status',
+            'created_at',
+            'updated_at',
+        ];
     }
 
     public function getId(): int

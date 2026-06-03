@@ -87,6 +87,38 @@ class Article extends ActiveRecord
         ];
     }
 
+    public function fields(): array
+    {
+        return [
+            'id',
+            'slug',
+            'title',
+            'excerpt',
+            'status',
+            'published_at',
+            'cover_url' => fn(self $m) => $m->getCoverUrl(true),
+            'og_image_url' => fn(self $m) => $m->getOgImageUrl(true),
+            'view_count',
+            'author_id',
+            'created_at',
+            'updated_at',
+            'url' => fn(self $m) => $m->getUrl(true),
+        ];
+    }
+
+    public function extraFields(): array
+    {
+        return [
+            'content_md',
+            'content_html' => fn(self $m) => $m->getRenderedHtml(),
+            'meta_title' => fn(self $m) => $m->getMetaTitle(),
+            'meta_description' => fn(self $m) => $m->getMetaDescription(),
+            'author',
+            'categories',
+            'tags',
+        ];
+    }
+
     public function attributeLabels(): array
     {
         return [
@@ -171,18 +203,26 @@ class Article extends ActiveRecord
 
     public function getUrl(bool $absolute = false): string
     {
-        return Url::to(['blog/view', 'slug' => $this->slug], $absolute ? true : false);
+        return Url::to(['/blog/view', 'slug' => $this->slug], $absolute ? true : false);
     }
 
-    public function getCoverUrl(): ?string
+    public function getCoverUrl(bool $absolute = false): ?string
     {
-        return $this->cover_path ? Yii::getAlias('@web/' . ltrim($this->cover_path, '/')) : null;
+        if (!$this->cover_path) {
+            return null;
+        }
+        $rel = '/' . ltrim($this->cover_path, '/');
+        return $absolute ? Url::base(true) . $rel : Yii::getAlias('@web' . $rel);
     }
 
-    public function getOgImageUrl(): ?string
+    public function getOgImageUrl(bool $absolute = false): ?string
     {
         $path = $this->og_image_path ?: $this->cover_path;
-        return $path ? Yii::getAlias('@web/' . ltrim($path, '/')) : null;
+        if (!$path) {
+            return null;
+        }
+        $rel = '/' . ltrim($path, '/');
+        return $absolute ? Url::base(true) . $rel : Yii::getAlias('@web' . $rel);
     }
 
     public function getMetaTitle(): string

@@ -18,6 +18,12 @@ $config = [
         'admin' => [
             'class' => app\modules\admin\Module::class,
         ],
+        'api' => [
+            'class' => yii\base\Module::class,
+            'modules' => [
+                'v1' => app\modules\api\v1\Module::class,
+            ],
+        ],
     ],
     'components' => [
         'request' => [
@@ -71,6 +77,20 @@ $config = [
                 'feed.xml' => 'blog/feed',
                 'sitemap.xml' => 'blog/sitemap',
                 'widgets/github-contributions' => 'widget/github-contributions',
+
+                ['class' => yii\rest\UrlRule::class, 'controller' => 'api/v1/article', 'pluralize' => true, 'tokens' => ['{id}' => '<id:\d+>']],
+                ['class' => yii\rest\UrlRule::class, 'controller' => 'api/v1/category', 'pluralize' => true, 'tokens' => ['{id}' => '<id:\d+>']],
+                ['class' => yii\rest\UrlRule::class, 'controller' => 'api/v1/tag', 'pluralize' => true, 'tokens' => ['{id}' => '<id:\d+>']],
+                'POST api/v1/articles/<id:\d+>/publish' => 'api/v1/article/publish',
+                'POST api/v1/articles/<id:\d+>/unpublish' => 'api/v1/article/unpublish',
+                'POST api/v1/articles/<id:\d+>/cover' => 'api/v1/article/cover',
+                'POST api/v1/articles/<id:\d+>/og-image' => 'api/v1/article/og-image',
+                'GET api/v1/articles/by-slug/<slug:[a-z0-9\-]+>' => 'api/v1/article/view-by-slug',
+                'GET api/v1/categories/by-slug/<slug:[a-z0-9\-]+>' => 'api/v1/category/view-by-slug',
+                'POST api/v1/auth/login' => 'api/v1/auth/login',
+                'POST api/v1/auth/logout' => 'api/v1/auth/logout',
+                'GET api/v1/auth/me' => 'api/v1/auth/me',
+
                 'about' => 'site/about',
                 'contact' => 'site/contact',
                 'login' => 'site/login',
