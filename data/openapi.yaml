@@ -1,0 +1,564 @@
+openapi: 3.1.0
+info:
+  title: carono.ru Blog API
+  version: 1.0.0
+  summary: REST API для блога carono.ru
+  description: |
+    Полный CRUD для статей, категорий и тегов.
+    Чтение публично, запись — через Bearer-токен с разрешением `manageContent`.
+  contact:
+    name: carono
+    url: https://github.com/carono
+  license:
+    name: BSD-3-Clause
+
+servers:
+  - url: https://carono.site/api/v1
+    description: Local development
+  - url: https://carono.ru/api/v1
+    description: Production
+
+tags:
+  - name: Auth
+    description: Аутентификация
+  - name: Articles
+    description: Статьи блога
+  - name: Categories
+    description: Категории
+  - name: Tags
+    description: Теги
+
+security: []
+
+paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Выдать bearer-токен
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username: { type: string, example: admin }
+                password: { type: string, format: password, example: admin }
+                ttl: { type: integer, minimum: 60, maximum: 2592000, default: 86400, description: TTL токена в секундах }
+      responses:
+        '200':
+          description: Токен выдан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token: { type: string, example: "YC5WR21yuvGJ3NLT..." }
+                  expires_at: { type: integer, example: 1780602411 }
+                  user: { $ref: '#/components/schemas/User' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Отозвать текущий токен
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: object, properties: { ok: { type: boolean } } }
+
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Текущий пользователь
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user: { $ref: '#/components/schemas/User' }
+                  permissions:
+                    type: object
+                    properties:
+                      manageContent: { type: boolean }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /articles:
+    get:
+      tags: [Articles]
+      summary: Список статей
+      description: |
+        Гостям возвращаются только опубликованные. Залогиненным с правом `manageContent` —
+        все, плюс можно фильтровать по статусу.
+      parameters:
+        - in: query
+          name: status
+          schema: { type: integer, enum: [0, 1], description: "0=draft, 1=published" }
+        - in: query
+          name: category
+          schema: { type: string }
+          description: slug категории
+        - in: query
+          name: tag
+          schema: { type: string }
+          description: slug тега
+        - in: query
+          name: q
+          schema: { type: string }
+          description: поиск по title и excerpt
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [published_at, -published_at, created_at, -created_at, view_count, -view_count]
+            default: -published_at
+        - in: query
+          name: page
+          schema: { type: integer, minimum: 1, default: 1 }
+        - in: query
+          name: per-page
+          schema: { type: integer, minimum: 1, maximum: 50, default: 20 }
+      responses:
+        '200':
+          description: Список статей
+          headers:
+            X-Pagination-Total-Count: { schema: { type: integer } }
+            X-Pagination-Page-Count: { schema: { type: integer } }
+            X-Pagination-Current-Page: { schema: { type: integer } }
+            X-Pagination-Per-Page: { schema: { type: integer } }
+            Link: { schema: { type: string }, description: RFC 5988 pagination links }
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Article' }
+
+    post:
+      tags: [Articles]
+      summary: Создать статью
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ArticleInput' }
+      responses:
+        '201':
+          description: Создано
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Article' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+
+  /articles/{id}:
+    parameters:
+      - { in: path, name: id, required: true, schema: { type: integer } }
+    get:
+      tags: [Articles]
+      summary: Получить статью по id
+      parameters:
+        - { in: query, name: expand, schema: { type: string, example: "content_html,categories,tags,author" } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Article' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+    patch:
+      tags: [Articles]
+      summary: Обновить статью
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ArticleInput' }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Article' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+
+    delete:
+      tags: [Articles]
+      summary: Удалить статью
+      security: [{ BearerAuth: [] }]
+      responses:
+        '204': { description: Удалено }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /articles/by-slug/{slug}:
+    parameters:
+      - { in: path, name: slug, required: true, schema: { type: string } }
+    get:
+      tags: [Articles]
+      summary: Получить статью по slug
+      parameters:
+        - { in: query, name: expand, schema: { type: string } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Article' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /articles/{id}/publish:
+    parameters:
+      - { in: path, name: id, required: true, schema: { type: integer } }
+    post:
+      tags: [Articles]
+      summary: Опубликовать статью
+      description: Ставит status=1 и published_at=now (если не было).
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Article' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /articles/{id}/unpublish:
+    parameters:
+      - { in: path, name: id, required: true, schema: { type: integer } }
+    post:
+      tags: [Articles]
+      summary: Снять с публикации
+      description: Ставит status=0 и сбрасывает published_at.
+      security: [{ BearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Article' }
+
+  /articles/{id}/cover:
+    parameters:
+      - { in: path, name: id, required: true, schema: { type: integer } }
+    post:
+      tags: [Articles]
+      summary: Загрузить обложку
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: { type: string, format: binary, description: "png, jpg, jpeg, webp (≤ 4 MB)" }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Article' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+
+  /articles/{id}/og-image:
+    parameters:
+      - { in: path, name: id, required: true, schema: { type: integer } }
+    post:
+      tags: [Articles]
+      summary: Загрузить OG-картинку
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: { type: string, format: binary }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Article' }
+
+  /categories:
+    get:
+      tags: [Categories]
+      summary: Список категорий
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Category' } }
+    post:
+      tags: [Categories]
+      summary: Создать категорию
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CategoryInput' }
+      responses:
+        '201':
+          description: Создано
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Category' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+
+  /categories/{id}:
+    parameters:
+      - { in: path, name: id, required: true, schema: { type: integer } }
+    get:
+      tags: [Categories]
+      summary: Получить категорию
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Category' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Categories]
+      summary: Обновить категорию
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CategoryInput' }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Category' } } } }
+    delete:
+      tags: [Categories]
+      summary: Удалить категорию
+      security: [{ BearerAuth: [] }]
+      responses:
+        '204': { description: Удалено }
+
+  /categories/by-slug/{slug}:
+    parameters:
+      - { in: path, name: slug, required: true, schema: { type: string } }
+    get:
+      tags: [Categories]
+      summary: Получить категорию по slug
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Category' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /tags:
+    get:
+      tags: [Tags]
+      summary: Список тегов
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Tag' } }
+    post:
+      tags: [Tags]
+      summary: Создать тег
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TagInput' }
+      responses:
+        '201':
+          description: Создано
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Tag' }
+
+  /tags/{id}:
+    parameters:
+      - { in: path, name: id, required: true, schema: { type: integer } }
+    get:
+      tags: [Tags]
+      summary: Получить тег
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Tag' } } } }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Tags]
+      summary: Обновить тег
+      security: [{ BearerAuth: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TagInput' }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Tag' } } } }
+    delete:
+      tags: [Tags]
+      summary: Удалить тег
+      security: [{ BearerAuth: [] }]
+      responses:
+        '204': { description: Удалено }
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: opaque
+      description: "Получить токен через POST /auth/login. Передавать как `Authorization: Bearer {token}`."
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id: { type: integer, example: 1 }
+        username: { type: string, example: admin }
+        email: { type: string, format: email }
+        status: { type: integer, enum: [9, 10], description: "10=active, 9=deleted" }
+        created_at: { type: integer, description: Unix timestamp }
+        updated_at: { type: integer }
+
+    Article:
+      type: object
+      properties:
+        id: { type: integer, example: 1 }
+        slug: { type: string, example: perezapusk-carono-ru }
+        title: { type: string }
+        excerpt: { type: string, nullable: true }
+        status: { type: integer, enum: [0, 1], description: "0=draft, 1=published" }
+        published_at: { type: integer, nullable: true, description: Unix timestamp }
+        cover_url: { type: string, nullable: true, format: uri }
+        og_image_url: { type: string, nullable: true, format: uri }
+        view_count: { type: integer }
+        author_id: { type: integer }
+        created_at: { type: integer }
+        updated_at: { type: integer }
+        url: { type: string, format: uri, description: Публичный URL статьи }
+        content_md: { type: string, description: "Доступно с ?expand=content_md" }
+        content_html: { type: string, description: "Отрендеренный HTML — ?expand=content_html" }
+        meta_title: { type: string }
+        meta_description: { type: string }
+        author: { $ref: '#/components/schemas/User' }
+        categories: { type: array, items: { $ref: '#/components/schemas/Category' } }
+        tags: { type: array, items: { $ref: '#/components/schemas/Tag' } }
+
+    ArticleInput:
+      type: object
+      properties:
+        title: { type: string }
+        slug: { type: string, description: "Опционально — сгенерируется из title" }
+        excerpt: { type: string }
+        content_md: { type: string, description: Markdown }
+        status: { type: integer, enum: [0, 1] }
+        meta_title: { type: string }
+        meta_description: { type: string }
+        published_at: { type: integer, nullable: true }
+        categoryIds: { type: array, items: { type: integer } }
+        tags:
+          oneOf:
+            - { type: array, items: { type: string } }
+            - { type: string, description: "Через запятую" }
+      required: [title, content_md]
+
+    Category:
+      type: object
+      properties:
+        id: { type: integer }
+        slug: { type: string }
+        title: { type: string }
+        description: { type: string, nullable: true }
+        created_at: { type: integer }
+        updated_at: { type: integer }
+        url: { type: string, format: uri }
+
+    CategoryInput:
+      type: object
+      required: [title]
+      properties:
+        title: { type: string }
+        slug: { type: string }
+        description: { type: string }
+
+    Tag:
+      type: object
+      properties:
+        id: { type: integer }
+        slug: { type: string }
+        title: { type: string }
+        created_at: { type: integer }
+        url: { type: string, format: uri }
+
+    TagInput:
+      type: object
+      required: [title]
+      properties:
+        title: { type: string }
+        slug: { type: string }
+
+    Error:
+      type: object
+      properties:
+        name: { type: string }
+        message: { type: string }
+        code: { type: integer }
+        status: { type: integer }
+        type: { type: string }
+
+    ValidationError:
+      allOf:
+        - $ref: '#/components/schemas/Error'
+        - type: object
+          properties:
+            errors:
+              type: object
+              additionalProperties:
+                type: array
+                items: { type: string }
+
+  responses:
+    Unauthorized:
+      description: Требуется авторизация
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    Forbidden:
+      description: Недостаточно прав
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    NotFound:
+      description: Не найдено
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    BadRequest:
+      description: Некорректный запрос
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/Error' }
+    ValidationError:
+      description: Ошибка валидации
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ValidationError' }

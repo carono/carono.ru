@@ -91,6 +91,10 @@ $config = [
                 'POST api/v1/auth/logout' => 'api/v1/auth/logout',
                 'GET api/v1/auth/me' => 'api/v1/auth/me',
 
+                'api' => 'docs/api',
+                'api/docs' => 'docs/api',
+                'api/openapi.yaml' => 'docs/openapi',
+
                 'about' => 'site/about',
                 'contact' => 'site/contact',
                 'login' => 'site/login',
