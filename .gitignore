@@ -34,3 +34,6 @@ tests/_support/_generated
 /yii
 /yii.bat
 /config/params-local.php
+
+# uploaded article covers / og images
+/web/uploads

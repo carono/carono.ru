@@ -1,44 +1,31 @@
 <?php
-/**
- * @link http://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- */
 
 namespace app\assets;
 
-use yii\bootstrap\BootstrapPluginAsset;
+use yii\bootstrap5\BootstrapAsset;
 use yii\web\AssetBundle;
 use yii\web\YiiAsset;
 
-/**
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @since 2.0
- */
 class AppAsset extends AssetBundle
 {
     public $basePath = '@webroot';
     public $baseUrl = '@web';
+
     public $css = [
-        '//fonts.googleapis.com/css?family=Lato:300,400,300italic,400italic',
-        '//fonts.googleapis.com/css?family=Montserrat:400,700',
-        'plugins/github-calendar/dist/github-calendar.css',
-        'plugins/github-activity/src/github-activity.css',
-        '//cdnjs.cloudflare.com/ajax/libs/octicons/2.0.2/octicons.min.css',
-        'css/styles.css',
+        ['https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap', 'rel' => 'stylesheet'],
+        'css/site.css',
     ];
+
     public $js = [
-        '//cdnjs.cloudflare.com/ajax/libs/es6-promise/3.0.2/es6-promise.min.js',
-        'plugins/jquery-rss/dist/jquery.rss.min.js',
-        'plugins/github-calendar/dist/github-calendar.min.js',
-        'plugins/github-activity/src/github-activity.js',
-        'js/main.js',
-        '//cdnjs.cloudflare.com/ajax/libs/fetch/0.10.1/fetch.min.js',
-        '//cdnjs.cloudflare.com/ajax/libs/mustache.js/0.7.2/mustache.min.js',
+        'js/site.js',
     ];
+
+    public $jsOptions = [
+        'defer' => true,
+    ];
+
     public $depends = [
         YiiAsset::class,
-        BootstrapPluginAsset::class,
-        BowerAsset::class
+        BootstrapAsset::class,
     ];
 }
