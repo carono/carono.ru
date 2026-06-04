@@ -6,7 +6,7 @@ return array_merge([
     'siteName' => 'carono.ru',
     'siteTagline' => 'личный сайт и блог',
     'siteDescription' => 'Блог разработчика про PHP, Yii, инфраструктуру и личные проекты.',
-    'siteAuthor' => 'Каронов Андрей',
+    'siteAuthor' => 'Александр Касьянов',
     'siteUrl' => 'https://carono.ru',
     'adminEmail' => 'admin@carono.ru',
     'noReplyEmail' => 'noreply@carono.ru',
