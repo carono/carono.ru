@@ -129,6 +129,14 @@ if (YII_ENV_DEV) {
         'class' => yii\gii\Module::class,
         'allowedIPs' => ['127.0.0.1', '::1', '192.168.*', '10.*', '172.*'],
     ];
+
+    $config['bootstrap'][] = 'aiDialog';
+    $config['modules']['aiDialog'] = [
+        'class' => Carono\AiDialog\Module::class,
+        'project' => 'carono',
+        'token' => 'carono-test-secret',
+        'allowedIPs' => ['127.0.0.1', '::1', '192.168.*', '10.*', '172.*'],
+    ];
 }
 
 return $config;

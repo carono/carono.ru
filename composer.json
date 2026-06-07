@@ -7,18 +7,16 @@
   "prefer-stable": true,
   "require": {
     "php": ">=8.3",
-    "ext-gd": "*",
-    "ext-intl": "*",
-    "ext-mbstring": "*",
     "ext-pdo": "*",
-    "carono/yii2-migrate": "^1.0",
-    "carono/yii2-rbac": "^1.0",
-    "cebe/markdown": "~1.2.1",
-    "npm-asset/carono-ai-dialog-widget": "0.1.0",
-    "oomphinc/composer-installers-extender": "^2.0",
+    "ext-mbstring": "*",
+    "ext-intl": "*",
+    "ext-gd": "*",
     "yiisoft/yii2": "~2.0.51",
     "yiisoft/yii2-bootstrap5": "~2.0.6",
-    "yiisoft/yii2-symfonymailer": "^3.0"
+    "yiisoft/yii2-symfonymailer": "^3.0",
+    "cebe/markdown": "~1.2.1",
+    "carono/yii2-rbac": "^1.0",
+    "carono/yii2-migrate": "^1.0"
   },
   "require-dev": {
     "yiisoft/yii2-debug": "~2.1.0",
@@ -28,15 +26,16 @@
     "codeception/specify": "^2.0",
     "codeception/verify": "^3.0",
     "codeception/module-yii2": "^1.1",
-    "codeception/module-asserts": "^3.0"
+    "codeception/module-asserts": "^3.0",
+    "carono/yii2-ai-dialog": "^1.0"
   },
   "config": {
     "sort-packages": true,
     "process-timeout": 1800,
     "allow-plugins": {
       "yiisoft/yii2-composer": true,
-      "oomphinc/composer-installers-extender": true,
-      "composer/installers": true
+      "composer/installers": true,
+      "oomphinc/composer-installers-extender": true
     }
   },
   "scripts": {
@@ -47,18 +46,27 @@
   "repositories": [
     {
       "type": "composer",
-      "url": "https://asset-packagist.org"
+      "url": "https://asset-packagist.org",
+      "comment": "exclude — пока asset-packagist отдаёт устаревший 0.1.0 виджета; берём 0.2.0 из inline-моста ниже. После индексации 0.2.0 — убрать exclude и inline-мост.",
+      "exclude": [
+        "npm-asset/carono-ai-dialog-widget"
+      ]
     },
     {
-      "comment": "ВРЕМЕННЫЙ мост, пока asset-packagist не проиндексирует пакет. После — удалить этот блок и переустановить.",
+      "comment": "ВРЕМЕННО: пакет ещё не на packagist — ставим из GitHub. После публикации на packagist — удалить этот блок.",
+      "type": "vcs",
+      "url": "https://github.com/carono/yii2-ai-dialog"
+    },
+    {
+      "comment": "ВРЕМЕННЫЙ мост, пока asset-packagist не проиндексирует npm-asset. После индексации — удалить этот блок и переустановить.",
       "type": "package",
       "package": {
         "name": "npm-asset/carono-ai-dialog-widget",
-        "version": "0.1.0",
+        "version": "0.2.0",
         "type": "npm-asset",
         "dist": {
           "type": "tar",
-          "url": "https://registry.npmjs.org/carono-ai-dialog-widget/-/carono-ai-dialog-widget-0.1.0.tgz"
+          "url": "https://registry.npmjs.org/carono-ai-dialog-widget/-/carono-ai-dialog-widget-0.2.0.tgz"
         }
       }
     }
