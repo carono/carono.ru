@@ -2,11 +2,13 @@
 /** @var yii\web\View $this */
 /** @var string $content */
 
+use app\assets\AiDialogAsset;
 use app\assets\AppAsset;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
 AppAsset::register($this);
+AiDialogAsset::register($this);
 
 $this->beginPage();
 ?>

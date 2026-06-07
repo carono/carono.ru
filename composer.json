@@ -7,16 +7,18 @@
   "prefer-stable": true,
   "require": {
     "php": ">=8.3",
-    "ext-pdo": "*",
-    "ext-mbstring": "*",
-    "ext-intl": "*",
     "ext-gd": "*",
+    "ext-intl": "*",
+    "ext-mbstring": "*",
+    "ext-pdo": "*",
+    "carono/yii2-migrate": "^1.0",
+    "carono/yii2-rbac": "^1.0",
+    "cebe/markdown": "~1.2.1",
+    "npm-asset/carono-ai-dialog-widget": "0.1.0",
+    "oomphinc/composer-installers-extender": "^2.0",
     "yiisoft/yii2": "~2.0.51",
     "yiisoft/yii2-bootstrap5": "~2.0.6",
-    "yiisoft/yii2-symfonymailer": "^3.0",
-    "cebe/markdown": "~1.2.1",
-    "carono/yii2-rbac": "^1.0",
-    "carono/yii2-migrate": "^1.0"
+    "yiisoft/yii2-symfonymailer": "^3.0"
   },
   "require-dev": {
     "yiisoft/yii2-debug": "~2.1.0",
@@ -32,7 +34,9 @@
     "sort-packages": true,
     "process-timeout": 1800,
     "allow-plugins": {
-      "yiisoft/yii2-composer": true
+      "yiisoft/yii2-composer": true,
+      "oomphinc/composer-installers-extender": true,
+      "composer/installers": true
     }
   },
   "scripts": {
@@ -44,9 +48,30 @@
     {
       "type": "composer",
       "url": "https://asset-packagist.org"
+    },
+    {
+      "comment": "ВРЕМЕННЫЙ мост, пока asset-packagist не проиндексирует пакет. После — удалить этот блок и переустановить.",
+      "type": "package",
+      "package": {
+        "name": "npm-asset/carono-ai-dialog-widget",
+        "version": "0.1.0",
+        "type": "npm-asset",
+        "dist": {
+          "type": "tar",
+          "url": "https://registry.npmjs.org/carono-ai-dialog-widget/-/carono-ai-dialog-widget-0.1.0.tgz"
+        }
+      }
     }
   ],
   "extra": {
+    "installer-types": [
+      "npm-asset"
+    ],
+    "installer-paths": {
+      "vendor/npm-asset/{$name}": [
+        "type:npm-asset"
+      ]
+    },
     "asset-installer-paths": {
       "npm-asset-library": "vendor/npm-asset",
       "bower-asset-library": "vendor/bower-asset"
